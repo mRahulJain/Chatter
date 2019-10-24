@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Activities.MainActivity">
             <ImageView
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
@@ -83,10 +83,10 @@
 
     <TextView
         android:layout_weight="1"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:gravity="bottom|center"
         android:paddingBottom="16dp"
-        android:background="#1FAFB2"
+        android:background="#ececec"
         android:id="@+id/createAccount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

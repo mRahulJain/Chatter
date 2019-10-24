@@ -1,9 +1,11 @@
-package com.chatter.chatter
+package com.chatter.chatter.Activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import androidx.core.text.bold
+import com.chatter.chatter.R
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -24,5 +26,11 @@ class MainActivity : AppCompatActivity() {
             }
         createAccount.text = create
         forgotPassword.text = forgot
+
+        createAccount.setOnClickListener {
+            val intent = Intent(this, CreateAccountAct::class.java)
+            startActivity(intent)
+        }
+
     }
 }
