@@ -16,6 +16,7 @@ import com.chatter.chatter.R
 import com.google.android.gms.tasks.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.theartofdev.edmodo.cropper.CropImage
@@ -49,6 +50,9 @@ class CreateAccountDetailsAct : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account_details)
+
+        storageReference = FirebaseStorage.getInstance()
+            .getReference("UserProfileImages/${FirebaseAuth.getInstance().currentUser!!.uid}")
 
         register.setOnClickListener {
             if(fullName.text.toString() == "" ||
