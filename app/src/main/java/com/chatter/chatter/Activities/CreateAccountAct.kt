@@ -28,12 +28,7 @@ class CreateAccountAct : AppCompatActivity() {
 
     val KEY_DATA = "data"
     val KEY_GOOGLE_OPEN = "app_open"
-    var googleCount = 0;
-
-//    override fun onStart() {
-//        super.onStart()
-//
-//    }
+    var googleCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,9 +80,10 @@ class CreateAccountAct : AppCompatActivity() {
                         }
                         startActivity(intent)
                         finish()
+                    } else {
+                        signIn()
                     }
                 }
-
                 mAuth.addAuthStateListener(mAuthListener)
             } else {
                 signIn()
