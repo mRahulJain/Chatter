@@ -1,10 +1,13 @@
 package com.chatter.chatter.Activities
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings.Global.putInt
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.edit
 import com.chatter.chatter.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -23,22 +26,38 @@ class CreateAccountAct : AppCompatActivity() {
     lateinit var mGoogleApiClient : GoogleApiClient
     lateinit var mAuthListener : FirebaseAuth.AuthStateListener
 
-    override fun onStart() {
-        super.onStart()
-        mAuth.addAuthStateListener(mAuthListener)
+    val KEY_DATA = "data"
+    val KEY_GOOGLE_OPEN = "app_open"
+    var googleCount = 0;
 
-    }
+//    override fun onStart() {
+//        super.onStart()
+//
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
 
+        val prefs = getPreferences(Context.MODE_PRIVATE)
+        googleCount = prefs.getInt(KEY_GOOGLE_OPEN, 0)
+
         mAuth = FirebaseAuth.getInstance()
-        mAuthListener = FirebaseAuth.AuthStateListener {
-            if(mAuth.currentUser != null) {
-                val intent = Intent(this, CreateAccountDetailsAct::class.java)
-                startActivity(intent)
+
+        if(googleCount == 0) {
+            mAuthListener = FirebaseAuth.AuthStateListener {
+                if(mAuth.currentUser != null) {
+                    val intent = Intent(this, CreateAccountDetailsAct::class.java)
+                    googleCount++
+                    prefs.edit {
+                        putInt(KEY_GOOGLE_OPEN, googleCount)
+                    }
+                    startActivity(intent)
+                    finish()
+                }
             }
+
+            mAuth.addAuthStateListener(mAuthListener)
         }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -56,7 +75,23 @@ class CreateAccountAct : AppCompatActivity() {
             .build()
 
         reqGoogle.setOnClickListener {
-            signIn()
+            if(googleCount != 0) {
+                mAuthListener = FirebaseAuth.AuthStateListener {
+                    if(mAuth.currentUser != null) {
+                        val intent = Intent(this, CreateAccountDetailsAct::class.java)
+                        googleCount++
+                        prefs.edit {
+                            putInt(KEY_GOOGLE_OPEN, googleCount)
+                        }
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+
+                mAuth.addAuthStateListener(mAuthListener)
+            } else {
+                signIn()
+            }
         }
 
         reqOTP.setOnClickListener {
