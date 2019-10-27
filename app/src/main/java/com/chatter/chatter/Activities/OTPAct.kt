@@ -72,6 +72,7 @@ class OTPAct : AppCompatActivity() {
             .addOnCompleteListener {
                 if(it.isSuccessful) {
                     val intent = Intent(this, CreateAccountDetailsAct::class.java)
+                    intent.putExtra("password", "")
                     startActivity(intent)
                     finish()
                 } else {

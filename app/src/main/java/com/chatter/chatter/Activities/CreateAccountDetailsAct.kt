@@ -51,6 +51,10 @@ class CreateAccountDetailsAct : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account_details)
 
+        val password = intent.getStringExtra("password")
+        password1.setText(password)
+        password2.setText(password)
+
         storageReference = FirebaseStorage.getInstance()
             .getReference("UserProfileImages/${FirebaseAuth.getInstance().currentUser!!.uid}")
 

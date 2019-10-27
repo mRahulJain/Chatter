@@ -74,6 +74,7 @@ class CreateAccountAct : AppCompatActivity() {
                 mAuthListener = FirebaseAuth.AuthStateListener {
                     if(mAuth.currentUser != null) {
                         val intent = Intent(this, CreateAccountDetailsAct::class.java)
+                        intent.putExtra("password", "")
                         googleCount++
                         prefs.edit {
                             putInt(KEY_GOOGLE_OPEN, googleCount)
@@ -113,6 +114,11 @@ class CreateAccountAct : AppCompatActivity() {
             var intent = Intent(this, OTPAct::class.java)
             intent.putExtra("number", "${num}")
             intent.putExtra("phoneNumber", "${number}")
+            startActivity(intent)
+        }
+
+        reqMail.setOnClickListener {
+            val intent = Intent(this, EmailLoginAct::class.java)
             startActivity(intent)
         }
     }
