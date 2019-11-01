@@ -29,19 +29,18 @@ class OTPAct : AppCompatActivity() {
         greetings.text = "Hey!"
 
         val callback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(p0: PhoneAuthCredential?) {
+            override fun onVerificationCompleted(p0: PhoneAuthCredential) {
                 otp!!.setValue(p0!!.smsCode.toString())
             }
 
-            override fun onVerificationFailed(p0: FirebaseException?) {
+            override fun onVerificationFailed(p0: FirebaseException) {
                 Toast.makeText(this@OTPAct, "${p0!!.localizedMessage}", Toast.LENGTH_LONG).show()
             }
 
-            override fun onCodeSent(p0: String?, p1: PhoneAuthProvider.ForceResendingToken?) {
+            override fun onCodeSent(p0: String, p1: PhoneAuthProvider.ForceResendingToken) {
                 super.onCodeSent(p0, p1)
                 verificationId = p0.toString()
             }
-
         }
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(

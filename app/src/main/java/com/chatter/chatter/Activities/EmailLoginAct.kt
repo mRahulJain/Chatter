@@ -50,6 +50,7 @@ class EmailLoginAct : AppCompatActivity() {
                     if(it.isSuccessful) {
                         FirebaseAuth.getInstance().currentUser!!.sendEmailVerification().addOnSuccessListener {
                             sendMail.setText("Login")
+                            sendMail.setBackgroundResource(R.drawable.background_facebook_button)
                             count = 1
                             Toast.makeText(this,
                                 "Email Sent Successfully",
