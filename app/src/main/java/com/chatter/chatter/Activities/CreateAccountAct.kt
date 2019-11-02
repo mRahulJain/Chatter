@@ -140,29 +140,8 @@ class CreateAccountAct : AppCompatActivity() {
             }
         }
 
-        reqOTP.setOnClickListener {
-            if(countryCode.text.toString() == "") {
-                Toast.makeText(this, "Country Code should not be empty", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if(phoneNumber.text.toString() == "") {
-                Toast.makeText(this, "Phone number should not be empty", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if(phoneNumber.text.toString().length < 10) {
-                Toast.makeText(this, "Phone number not valid", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val code = countryCode.text.toString()
-            val num = phoneNumber.text.toString()
-            val number = "+" + code + num
-
-            var intent = Intent(this, OTPAct::class.java)
-            intent.putExtra("number", "${num}")
-            intent.putExtra("phoneNumber", "${number}")
+        reqPhone.setOnClickListener {
+            var intent = Intent(this, PhoneAuthAct::class.java)
             startActivity(intent)
         }
 
