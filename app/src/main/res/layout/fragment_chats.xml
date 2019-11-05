@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout android:id="@+id/shimmerChats"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.ChatsFrag"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listChats"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <TextView
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        android:visibility="gone"
+        android:id="@+id/noChats"
+        android:text="No conversations yet!"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:visibility="gone"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
+            android:text="Connect with a friend"
+            android:id="@+id/addFriend"
+            app:backgroundTint="#1FAFB2"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="bottom|right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:visibility="gone"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
+            android:text="Create a group"
+            android:id="@+id/createRoom"
+            app:backgroundTint="#1FAFB2"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="bottom|right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:visibility="gone"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
+            android:text="Join a group"
+            android:id="@+id/joinRoom"
+            app:backgroundTint="#1FAFB2"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="bottom|right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/plus"
+            app:backgroundTint="#1FAFB2"
+            android:src="@drawable/ic_add"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+</com.facebook.shimmer.ShimmerFrameLayout>

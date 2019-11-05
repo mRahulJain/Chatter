@@ -10,5 +10,6 @@
     <style name="loginPageEditText" parent="@style/Theme.AppCompat.Light">
         <item name="colorAccent">#253744</item>
     </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
 </resources>

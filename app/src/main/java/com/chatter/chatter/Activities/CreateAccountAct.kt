@@ -152,8 +152,6 @@ class CreateAccountAct : AppCompatActivity() {
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
         if(type == "fb") {
             callbackManager.onActivityResult(requestCode, resultCode, data)
         } else if(type == "google") {
@@ -170,6 +168,7 @@ class CreateAccountAct : AppCompatActivity() {
                 }
             }
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
