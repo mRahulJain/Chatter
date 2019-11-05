@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.PhoneAuthAct"></activity>
+        <activity android:name=".Activities.PRAct"></activity>
+        <activity android:name=".Activities.PhoneAuthAct" />
         <activity android:name=".Activities.EmailLoginAct" />
         <activity android:name=".Activities.ChatsActivity" />
         <activity android:name=".Activities.OTPAct" />

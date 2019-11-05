@@ -122,5 +122,18 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        forgotPassword.setOnClickListener {
+            if(usernameE.text.toString() == "") {
+                Toast.makeText(this,
+                    "Enter username",
+                    Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, PRAct::class.java)
+            intent.putExtra("username", "${usernameE.text}")
+            startActivity(intent)
+        }
+
     }
 }

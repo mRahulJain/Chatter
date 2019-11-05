@@ -6,5 +6,7 @@ data class Profiles(
     val dob : String = "",
     val password : String = "",
     val gender : String = "",
-    val uid : String = ""
+    val uid : String = "",
+    val prq : String = "",
+    val prqA : String = ""
 )

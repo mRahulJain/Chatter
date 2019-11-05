@@ -121,6 +121,24 @@
                             android:hint="Rewrite Password *"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"/>
+                        <Spinner
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="30dp"
+                            android:id="@+id/spnQuestion"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                        <EditText
+                            android:id="@+id/questionAnswer"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="30dp"
+                            android:textColor="#0c1f2d"
+                            android:theme="@style/loginPageEditText"
+                            android:layout_marginRight="30dp"
+                            android:padding="8dp"
+                            android:hint="Your answer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
                         <RadioGroup
                             android:id="@+id/gender"
                             android:layout_marginTop="20dp"

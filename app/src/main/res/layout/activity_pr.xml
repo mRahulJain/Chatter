@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#ececec"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activities.PRAct">
+    <TextView
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:background="@drawable/gradient_create_account"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:padding="8dp"
+                android:id="@+id/question"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:text="Your question"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <EditText
+                android:padding="8dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/answer"
+                android:hint="Your answer"
+                android:layout_marginBottom="30dp"
+                android:layout_marginLeft="20dp"
+                android:theme="@style/loginPageEditText"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/background_edit_text_login_page"
+                android:inputType="text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <Button
+            android:paddingLeft="60dp"
+            android:paddingRight="60dp"
+            android:paddingTop="10dp"
+            android:id="@+id/getPassword"
+            android:paddingBottom="10dp"
+            android:textAllCaps="false"
+            android:text="Get Password"
+            android:background="@drawable/background_login_btn"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

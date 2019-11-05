@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.webkit.MimeTypeMap
+import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.view.setPadding
@@ -39,6 +40,14 @@ class CreateAccountDetailsAct : AppCompatActivity() {
             .fallbackToDestructiveMigration()
             .build()
     }
+    val questions : ArrayList<String> = arrayListOf(
+        "Select Password Recovery Question",
+        "In what city were you born?",
+        "What is your favorite movie?",
+        "Name your favourite childhood friend?",
+        "What is your father's middle name?",
+        "What is the name of your first school?"
+    )
 
     val PICK_IMAGE_REQUEST = 1
     lateinit var storageReference : StorageReference
@@ -55,6 +64,12 @@ class CreateAccountDetailsAct : AppCompatActivity() {
         password1.setText(password)
         password2.setText(password)
 
+        spnQuestion.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            questions
+        )
+
         storageReference = FirebaseStorage.getInstance()
             .getReference("UserProfileImages/${FirebaseAuth.getInstance().currentUser!!.uid}")
 
@@ -66,6 +81,13 @@ class CreateAccountDetailsAct : AppCompatActivity() {
             ) {
                 Toast.makeText(this,
                     "Fill all the * fields",
+                    Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if(spnQuestion.selectedItem.toString() == "Select Password Recovery Question") {
+                Toast.makeText(this,
+                    "Password recovery question not specified",
                     Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -124,6 +146,8 @@ class CreateAccountDetailsAct : AppCompatActivity() {
                                         hashMap.put("gender", "${gender}")
                                         hashMap.put("imageURL", "${imageURLS}")
                                         hashMap.put("uid", "${uid}")
+                                        hashMap.put("prq", "${spnQuestion.selectedItem}")
+                                        hashMap.put("prqA", "${questionAnswer.text}")
                                         ref.setValue(hashMap)
                                     }
                                 }
@@ -143,6 +167,8 @@ class CreateAccountDetailsAct : AppCompatActivity() {
                 hashMap.put("gender", "${gender}")
                 hashMap.put("imageURL", "")
                 hashMap.put("uid", "${uid}")
+                hashMap.put("prq", "${spnQuestion.selectedItem}")
+                hashMap.put("prqA", "${questionAnswer.text}")
                 ref.setValue(hashMap)
             }
 

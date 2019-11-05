@@ -76,10 +76,11 @@
             android:paddingTop="14dp"
             android:layout_gravity="center|bottom"
             android:text="Continue"
-            android:layout_marginTop="30dp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="20dp"
             android:id="@+id/reqOTP"
             android:textAllCaps="false"
-            android:background="@android:color/transparent"
+            android:background="@drawable/background_login_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
