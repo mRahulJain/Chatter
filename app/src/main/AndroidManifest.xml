@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.ConvoActivity"></activity>
+        <activity android:name=".Activities.GroupInfoAct"></activity>
+        <activity android:name=".Activities.ConvoActivity" />
         <activity android:name=".Activities.SplashAct">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +28,7 @@
         <activity android:name=".Activities.OTPAct" />
         <activity android:name=".Activities.CreateAccountDetailsAct" />
         <activity android:name=".Activities.CreateAccountAct" />
-        <activity android:name=".Activities.MainActivity"></activity>
+        <activity android:name=".Activities.MainActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -51,7 +52,7 @@
         </activity>
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/>
+            android:theme="@style/Base.Theme.AppCompat" />
     </application>
 
 </manifest>

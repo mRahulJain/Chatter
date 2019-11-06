@@ -84,7 +84,7 @@ class GroupAct : AppCompatActivity() {
                                 val hashMap = HashMap<String, String>()
                                 hashMap.put("roomName", "${groupName.text}")
                                 hashMap.put("roomCode", "${groupPasskey.text}")
-                                hashMap.put("roomAdmin", "${uid}")
+                                hashMap.put("roomAdmin", "${db.UserDao().getUser().username}")
                                 hashMap.put("roomImg", "")
                                 ref.child("${groupName.text}").setValue(hashMap)
                                 val reff = FirebaseDatabase.getInstance()

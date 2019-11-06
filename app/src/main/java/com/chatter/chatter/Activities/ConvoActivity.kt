@@ -323,9 +323,9 @@ class ConvoActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when(item.itemId) {
         R.id.btnInfo -> {
-//            val intent = Intent(this@ConvoActivity, roomInfoAct::class.java)
-//            intent.putExtra("roomName", "${roomName}")
-//            startActivity(intent)
+            val intent = Intent(this@ConvoActivity, GroupInfoAct::class.java)
+            intent.putExtra("roomName", "${roomName}")
+            startActivity(intent)
             true
         }
         android.R.id.home -> {
