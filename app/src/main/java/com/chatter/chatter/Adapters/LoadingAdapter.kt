@@ -25,7 +25,6 @@ class LoadingAdapter(val context: Context) :
         holder.itemView.parentLayoutShimmer.startShimmerAnimation()
         holder.itemView.groupImgI.setBackgroundResource(R.drawable.background_loader)
         holder.itemView.groupNameI.setBackgroundResource(R.drawable.background_loader)
-        holder.itemView.groupMessageI.setBackgroundResource(R.drawable.background_loader)
     }
 
 

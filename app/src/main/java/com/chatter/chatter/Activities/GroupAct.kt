@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.room.Room
+import com.chatter.chatter.Database.AppDatabase
 import com.chatter.chatter.Objects_Classes.Rooms
 import com.chatter.chatter.R
 import com.google.android.material.snackbar.Snackbar
@@ -13,6 +15,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_group.*
+import kotlin.properties.Delegates
 
 class GroupAct : AppCompatActivity() {
 
@@ -20,6 +23,16 @@ class GroupAct : AppCompatActivity() {
     val rooms : ArrayList<Rooms> = arrayListOf()
     var check = 0
     var count = 0
+    val db: AppDatabase by lazy {
+        Room.databaseBuilder(
+            this,
+            AppDatabase::class.java,
+            "User.db"
+        ).allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+    lateinit var uid : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +45,9 @@ class GroupAct : AppCompatActivity() {
         } else {
             action.setText("Join")
         }
+
+        val dbUser = db.UserDao().getUser()
+        uid = dbUser!!.uid
 
         action.setOnClickListener {
             if(groupName.text.toString() == "" ||
@@ -68,11 +84,11 @@ class GroupAct : AppCompatActivity() {
                                 val hashMap = HashMap<String, String>()
                                 hashMap.put("roomName", "${groupName.text}")
                                 hashMap.put("roomCode", "${groupPasskey.text}")
-                                hashMap.put("roomAdmin", "${FirebaseAuth.getInstance().currentUser!!.uid}")
+                                hashMap.put("roomAdmin", "${uid}")
                                 hashMap.put("roomImg", "")
                                 ref.child("${groupName.text}").setValue(hashMap)
                                 val reff = FirebaseDatabase.getInstance()
-                                    .getReference("Groups/${FirebaseAuth.getInstance().currentUser!!.uid}")
+                                    .getReference("Groups/${uid}")
                                 reff.child("${System.currentTimeMillis()}")
                                     .setValue("${groupName.text}")
                                 Toast.makeText(this@GroupAct,
@@ -100,7 +116,7 @@ class GroupAct : AppCompatActivity() {
                                     if(getRoom!!.roomCode == groupPasskey.text.toString()) {
                                         if(count == 0) {
                                             val reff = FirebaseDatabase.getInstance()
-                                                .getReference("Groups/${FirebaseAuth.getInstance().currentUser!!.uid}")
+                                                .getReference("Groups/${uid}")
                                             reff.child("${System.currentTimeMillis()}")
                                                 .setValue("${groupName.text}")
                                             Toast.makeText(this@GroupAct,

@@ -3,6 +3,7 @@ package com.chatter.chatter.Fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +11,13 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import com.chatter.chatter.Activities.GroupAct
 import com.chatter.chatter.Adapters.ChatAdapter
 import com.chatter.chatter.Adapters.LoadingAdapter
+import com.chatter.chatter.Database.AppDatabase
+import com.chatter.chatter.Objects_Classes.Message
+import com.chatter.chatter.Objects_Classes.Profiles
 import com.chatter.chatter.Objects_Classes.Rooms
 
 import com.chatter.chatter.R
@@ -25,8 +30,19 @@ import kotlinx.android.synthetic.main.fragment_chats.view.*
 
 class ChatsFrag : Fragment() {
 
+    val db: AppDatabase by lazy {
+        Room.databaseBuilder(
+            requireContext(),
+            AppDatabase::class.java,
+            "User.db"
+        ).allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
+    }
     val roomList : ArrayList<String> = arrayListOf()
     val groupList : ArrayList<Rooms> = arrayListOf()
+    lateinit var uid : String
+    var count = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,44 +54,70 @@ class ChatsFrag : Fragment() {
         view!!.listChats.layoutManager = LinearLayoutManager(view!!.context, LinearLayoutManager.VERTICAL, false)
         view!!.listChats.adapter = LoadingAdapter(view!!.context)
 
-        val ref = FirebaseDatabase.getInstance()
-            .getReference("Groups/${FirebaseAuth.getInstance().currentUser!!.uid}")
-        ref.addValueEventListener(object : ValueEventListener{
+        val dbUser = db.UserDao().getUser()
+
+        val r = FirebaseDatabase.getInstance()
+            .getReference("Profiles")
+        r.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
 
             }
 
             override fun onDataChange(p0: DataSnapshot) {
                 if(p0.exists()) {
-                    roomList.clear()
                     for(snap in p0.children) {
-                        roomList.add(snap.value.toString())
-                    }
+                        val getUser = snap!!.getValue(Profiles::class.java)
+                        if(getUser!!.uid == dbUser!!.uid) {
+                            uid = getUser!!.uid
+                            val ref = FirebaseDatabase.getInstance()
+                                .getReference("Groups/${uid}")
+                            ref.addValueEventListener(object : ValueEventListener{
+                                override fun onCancelled(p0: DatabaseError) {
 
-                    val reff = FirebaseDatabase.getInstance()
-                        .getReference("Rooms")
-                    reff.addValueEventListener(object : ValueEventListener{
-                        override fun onCancelled(p0: DatabaseError) {
+                                }
 
-                        }
+                                override fun onDataChange(p0: DataSnapshot) {
+                                    if(p0.exists()) {
+                                        roomList.clear()
+                                        for(snap in p0.children) {
+                                            roomList.add(snap.value.toString())
+                                        }
 
-                        override fun onDataChange(p0: DataSnapshot) {
-                            if(p0.exists()) {
-                                groupList.clear()
-                                for(snap in p0.children) {
-                                    if(roomList.contains(snap.key.toString())) {
-                                        groupList.add(snap.getValue(Rooms::class.java)!!)
+                                        val reff = FirebaseDatabase.getInstance()
+                                            .getReference("Rooms")
+                                        reff.addValueEventListener(object : ValueEventListener{
+                                            override fun onCancelled(p0: DatabaseError) {
+
+                                            }
+
+                                            override fun onDataChange(p0: DataSnapshot) {
+                                                if(p0.exists()) {
+                                                    groupList.clear()
+                                                    for(snap in p0.children) {
+                                                        if(roomList.contains(snap.key.toString())) {
+                                                            groupList.add(snap.getValue(Rooms::class.java)!!)
+                                                        }
+                                                    }
+                                                    if(count == 0) {
+                                                        view!!.listChats.layoutManager = LinearLayoutManager(view!!.context, LinearLayoutManager.VERTICAL, false)
+                                                        view!!.listChats.adapter = ChatAdapter(view!!.context, groupList)
+                                                        count = 1
+                                                    } else {
+                                                        view!!.listChats.adapter!!.notifyDataSetChanged()
+                                                    }
+                                                }
+                                            }
+
+                                        })
+                                    } else {
+                                        view!!.noChats.isVisible = true
                                     }
                                 }
-                                view!!.listChats.layoutManager = LinearLayoutManager(view!!.context, LinearLayoutManager.VERTICAL, false)
-                                view!!.listChats.adapter = ChatAdapter(view!!.context, groupList)
-                                view!!.listChats.adapter!!.notifyDataSetChanged()
-                            }
-                        }
 
-                    })
-                } else {
-                    view!!.noChats.isVisible = true
+                            })
+                            break
+                        }
+                    }
                 }
             }
 

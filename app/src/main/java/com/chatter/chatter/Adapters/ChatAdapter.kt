@@ -1,10 +1,12 @@
 package com.chatter.chatter.Adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.chatter.chatter.Activities.ConvoActivity
 import com.chatter.chatter.Objects_Classes.Rooms
 import com.chatter.chatter.R
 import com.squareup.picasso.Picasso
@@ -31,6 +33,12 @@ class ChatAdapter(val context: Context, val nameList : ArrayList<Rooms>) :
             Picasso.with(context)
                 .load(nameList[position]!!.roomImg)
                 .into(holder.itemView.groupImgI)
+        }
+
+        holder.itemView.openConversation.setOnClickListener {
+            val intent = Intent(context, ConvoActivity::class.java)
+            intent.putExtra("roomName", "${nameList[position]!!.roomName}")
+            context.startActivity(intent)
         }
     }
 

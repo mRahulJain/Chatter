@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/btnInfo"
+        android:title="Room info"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/btnStarred"
+        android:title="Starred messages"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/btnExit"
+        android:title="Leave room"
+        app:showAsAction="never"/>
+
+
+</menu>

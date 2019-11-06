@@ -49,6 +49,7 @@ dependencies {
     implementation 'com.github.GoodieBag:Pinview:v1.4'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'id.zelory:compressor:2.1.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
     implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
 }
