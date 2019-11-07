@@ -140,6 +140,9 @@ class GroupInfoAct : AppCompatActivity() {
         }
 
         save.setOnClickListener {
+            if(!flagImage) {
+                return@setOnClickListener
+            }
             Toast.makeText(this,
                 "Please wait",
                 Toast.LENGTH_LONG).show()

@@ -9,5 +9,6 @@ data class Profiles(
     val uid : String = "",
     val prq : String = "",
     val prqA : String = "",
-    val imageURL : String  = ""
+    val imageURL : String  = "",
+    val bio : String = ""
 )

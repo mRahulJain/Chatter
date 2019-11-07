@@ -148,6 +148,7 @@ class CreateAccountDetailsAct : AppCompatActivity() {
                                         hashMap.put("uid", "${uid}")
                                         hashMap.put("prq", "${spnQuestion.selectedItem}")
                                         hashMap.put("prqA", "${questionAnswer.text}")
+                                        hashMap.put("bio", "")
                                         ref.setValue(hashMap)
                                     }
                                 }
@@ -169,6 +170,7 @@ class CreateAccountDetailsAct : AppCompatActivity() {
                 hashMap.put("uid", "${uid}")
                 hashMap.put("prq", "${spnQuestion.selectedItem}")
                 hashMap.put("prqA", "${questionAnswer.text}")
+                hashMap.put("bio", "")
                 ref.setValue(hashMap)
             }
 

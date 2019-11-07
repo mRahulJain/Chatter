@@ -551,10 +551,10 @@ class ConvoActivity : AppCompatActivity() {
                 holder.itemView.parentL.setBackgroundResource(R.drawable.message_background)
             }
             holder.itemView.imageChat.setOnClickListener {
-//                val intent = Intent(context, PhotoAct::class.java)
-//                intent.putExtra("name", "${nameList[position]!!.name}")
-//                intent.putExtra("photo", "${nameList[position]!!.text}")
-//                startActivity(intent)
+                val intent = Intent(context, ImageActivity::class.java)
+                intent.putExtra("purpose", "${nameList[position]!!.name}")
+                intent.putExtra("url", "${nameList[position]!!.text}")
+                startActivity(intent)
             }
             holder.itemView.prnt.setOnClickListener {
                 if(flag == false) {
