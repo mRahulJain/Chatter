@@ -85,10 +85,10 @@ class ConvoActivity : AppCompatActivity() {
         storageReference = FirebaseStorage.getInstance()
             .getReference("Files/${roomName}")
         databaseReference = FirebaseDatabase.getInstance()
-            .getReference("Messages/${roomName}")
+            .getReference("Chats/${roomName}")
 
         val reference = FirebaseDatabase.getInstance()
-            .getReference("Messages/${roomName}")
+            .getReference("Chats/${roomName}")
         reference.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
@@ -104,7 +104,7 @@ class ConvoActivity : AppCompatActivity() {
 
         val reff = FirebaseDatabase
             .getInstance()
-            .getReference("Messages/${roomName}")
+            .getReference("Chats/${roomName}")
             .orderByKey()
         reff.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -183,7 +183,7 @@ class ConvoActivity : AppCompatActivity() {
             }
             eTMessage.setText("")
             val messageRef = FirebaseDatabase.getInstance()
-                .getReference("Messages/${roomName}")
+                .getReference("Chats/${roomName}")
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = System.currentTimeMillis()
             val date = calendar.get(Calendar.DAY_OF_MONTH)
@@ -333,9 +333,9 @@ class ConvoActivity : AppCompatActivity() {
             true
         }
         R.id.btnStarred -> {
-//            val intent = Intent(this@ConvoActivity, starredMessagesAct::class.java)
-//            intent.putExtra("roomName", "${roomName}")
-//            startActivity(intent)
+            val intent = Intent(this@ConvoActivity, StarredMessageAct::class.java)
+            intent.putExtra("roomName", "${roomName}")
+            startActivity(intent)
             true
         }
         R.id.btnExit -> {
@@ -344,12 +344,8 @@ class ConvoActivity : AppCompatActivity() {
                 .setPositiveButton("Leave"){dialogInterface, which ->
                     val ref = FirebaseDatabase
                         .getInstance()
-                        .getReference("Users/${userID}/${roomName}")
+                        .getReference("InitialChats/${userID}/${roomName}")
                     ref.removeValue()
-                    val reff = FirebaseDatabase
-                        .getInstance()
-                        .getReference("Rooms/${roomName}/roomChats/${userID}")
-                    reff.removeValue()
                     super.onBackPressed()
                 }
                 .setNegativeButton("No") { dialogInterface, which ->
@@ -402,7 +398,7 @@ class ConvoActivity : AppCompatActivity() {
                             builder.setMessage("Delete message?")
                                 .setPositiveButton("Delete"){dialogInterface, which ->
                                     f = true
-                                    val ref = FirebaseDatabase.getInstance().getReference("Messages/${roomName}")
+                                    val ref = FirebaseDatabase.getInstance().getReference("Chats/${roomName}")
                                     for(msg in longPressedMsgList) {
                                         if(msg!!.uid == uid) {
                                             ref.child("${msg!!.messageNumber}").removeValue()
@@ -410,7 +406,7 @@ class ConvoActivity : AppCompatActivity() {
                                     }
                                     val reff = FirebaseDatabase
                                         .getInstance()
-                                        .getReference("Rooms/${roomName}/roomChats/${userID}/starredMessages")
+                                        .getReference("Starred/${roomName}/${userID}/starredMessages")
                                     for(msg in longPressedMsgList) {
                                         if(msg!!.uid == userID) {
                                             reff.child("${msg!!.messageNumber}").removeValue()
@@ -426,7 +422,7 @@ class ConvoActivity : AppCompatActivity() {
                             builder.setMessage("Delete ${count} messages?")
                                 .setPositiveButton("Delete"){dialogInterface, which ->
                                     f = true
-                                    val ref = FirebaseDatabase.getInstance().getReference("Messages/${roomName}")
+                                    val ref = FirebaseDatabase.getInstance().getReference("Chats/${roomName}")
                                     for(msg in longPressedMsgList) {
                                         if(msg!!.uid == userID) {
                                             ref.child("${msg!!.messageNumber}").removeValue()
@@ -434,7 +430,7 @@ class ConvoActivity : AppCompatActivity() {
                                     }
                                     val reff = FirebaseDatabase
                                         .getInstance()
-                                        .getReference("Rooms/${roomName}/roomChats/${userID}/starredMessages")
+                                        .getReference("Starred/${roomName}/${userID}/starredMessages")
                                     for(msg in longPressedMsgList) {
                                         if(msg!!.uid == userID) {
                                             reff.child("${msg!!.messageNumber}").removeValue()

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_tab"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:background="#ececec"
+            android:theme="@style/AppTheme.AppBarOverlay">
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbarStarredMessage"
+                    android:layout_width="match_parent"
+                    android:theme="@style/ThemeOverlay.AppCompat.Light"
+                    android:layout_height="?attr/actionBarSize">
+                </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/progressStarred"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/starred"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </androidx.recyclerview.widget.RecyclerView>
+        <TextView
+            android:layout_gravity="center"
+            android:text="No starred messages"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:id="@+id/noStarred"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
+
+
+
+</LinearLayout>

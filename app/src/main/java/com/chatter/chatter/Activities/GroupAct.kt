@@ -61,7 +61,7 @@ class GroupAct : AppCompatActivity() {
             progressGroup.isVisible = true
             if(type == "Create a group") {
                 val ref = FirebaseDatabase.getInstance()
-                    .getReference("Rooms")
+                    .getReference("InitialChats/${uid}")
                 ref.addValueEventListener(object : ValueEventListener{
                     override fun onCancelled(p0: DatabaseError) {
 
@@ -88,9 +88,8 @@ class GroupAct : AppCompatActivity() {
                                 hashMap.put("roomImg", "")
                                 ref.child("${groupName.text}").setValue(hashMap)
                                 val reff = FirebaseDatabase.getInstance()
-                                    .getReference("Groups/${uid}")
-                                reff.child("${System.currentTimeMillis()}")
-                                    .setValue("${groupName.text}")
+                                    .getReference("RoomInfo/${groupName.text}")
+                                reff.setValue(hashMap)
                                 Toast.makeText(this@GroupAct,
                                     "Group Created Successfully",
                                     Toast.LENGTH_SHORT).show()
@@ -100,7 +99,7 @@ class GroupAct : AppCompatActivity() {
                 })
             } else {
                 val ref = FirebaseDatabase.getInstance()
-                    .getReference("Rooms")
+                    .getReference("RoomInfo")
                 ref.addValueEventListener(object : ValueEventListener{
                     override fun onCancelled(p0: DatabaseError) {
 
@@ -116,9 +115,13 @@ class GroupAct : AppCompatActivity() {
                                     if(getRoom!!.roomCode == groupPasskey.text.toString()) {
                                         if(count == 0) {
                                             val reff = FirebaseDatabase.getInstance()
-                                                .getReference("Groups/${uid}")
-                                            reff.child("${System.currentTimeMillis()}")
-                                                .setValue("${groupName.text}")
+                                                .getReference("InitialChats/${uid}")
+                                            val hashMap = HashMap<String, String>()
+                                            hashMap.put("roomName", "${groupName.text}")
+                                            hashMap.put("roomCode", "${groupPasskey.text}")
+                                            hashMap.put("roomAdmin", "${db.UserDao().getUser().username}")
+                                            hashMap.put("roomImg", "")
+                                            reff.child(groupName.text.toString()).setValue(hashMap)
                                             Toast.makeText(this@GroupAct,
                                                 "Group Joined Successfully",
                                                 Toast.LENGTH_SHORT).show()
@@ -147,7 +150,6 @@ class GroupAct : AppCompatActivity() {
                             }
                         }
                     }
-
                 })
             }
         }

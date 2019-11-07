@@ -39,7 +39,7 @@ class ChatsFrag : Fragment() {
             .fallbackToDestructiveMigration()
             .build()
     }
-    val roomList : ArrayList<String> = arrayListOf()
+    val roomList : ArrayList<Rooms> = arrayListOf()
     val groupList : ArrayList<Rooms> = arrayListOf()
     lateinit var uid : String
     var count = 0
@@ -52,72 +52,37 @@ class ChatsFrag : Fragment() {
         val view = inflater.inflate(R.layout.fragment_chats, container, false)
 
         view!!.listChats.layoutManager = LinearLayoutManager(view!!.context, LinearLayoutManager.VERTICAL, false)
-        view!!.listChats.adapter = LoadingAdapter(view!!.context)
+        view!!.listChats.adapter = LoadingAdapter(view!!.context, true)
 
         val dbUser = db.UserDao().getUser()
+        uid = dbUser!!.uid
 
-        val r = FirebaseDatabase.getInstance()
-            .getReference("Profiles")
-        r.addValueEventListener(object : ValueEventListener{
+        val ref = FirebaseDatabase.getInstance()
+            .getReference("InitialChats/${uid}")
+        ref.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
 
             }
 
             override fun onDataChange(p0: DataSnapshot) {
                 if(p0.exists()) {
+                    view!!.noChats.isVisible = false
+                    roomList.clear()
                     for(snap in p0.children) {
-                        val getUser = snap!!.getValue(Profiles::class.java)
-                        if(getUser!!.uid == dbUser!!.uid) {
-                            uid = getUser!!.uid
-                            val ref = FirebaseDatabase.getInstance()
-                                .getReference("Groups/${uid}")
-                            ref.addValueEventListener(object : ValueEventListener{
-                                override fun onCancelled(p0: DatabaseError) {
-
-                                }
-
-                                override fun onDataChange(p0: DataSnapshot) {
-                                    if(p0.exists()) {
-                                        roomList.clear()
-                                        for(snap in p0.children) {
-                                            roomList.add(snap.value.toString())
-                                        }
-
-                                        val reff = FirebaseDatabase.getInstance()
-                                            .getReference("Rooms")
-                                        reff.addValueEventListener(object : ValueEventListener{
-                                            override fun onCancelled(p0: DatabaseError) {
-
-                                            }
-
-                                            override fun onDataChange(p0: DataSnapshot) {
-                                                if(p0.exists()) {
-                                                    groupList.clear()
-                                                    for(snap in p0.children) {
-                                                        if(roomList.contains(snap.key.toString())) {
-                                                            groupList.add(snap.getValue(Rooms::class.java)!!)
-                                                        }
-                                                    }
-                                                    if(count == 0) {
-                                                        view!!.listChats.layoutManager = LinearLayoutManager(view!!.context, LinearLayoutManager.VERTICAL, false)
-                                                        view!!.listChats.adapter = ChatAdapter(view!!.context, groupList)
-                                                        count = 1
-                                                    } else {
-                                                        view!!.listChats.adapter!!.notifyDataSetChanged()
-                                                    }
-                                                }
-                                            }
-
-                                        })
-                                    } else {
-                                        view!!.noChats.isVisible = true
-                                    }
-                                }
-
-                            })
-                            break
-                        }
+                        roomList.add(snap.getValue(Rooms::class.java)!!)
                     }
+
+                    if(count == 0) {
+                        view!!.listChats.layoutManager = LinearLayoutManager(view!!.context, LinearLayoutManager.VERTICAL, false)
+                        view!!.listChats.adapter = ChatAdapter(view!!.context, roomList)
+                        count = 1
+                    } else {
+                        view!!.listChats.adapter!!.notifyDataSetChanged()
+                    }
+                } else {
+                    view!!.noChats.isVisible = true
+                    view!!.listChats.layoutManager = LinearLayoutManager(view!!.context, LinearLayoutManager.VERTICAL, false)
+                    view!!.listChats.adapter = LoadingAdapter(view!!.context, false)
                 }
             }
 

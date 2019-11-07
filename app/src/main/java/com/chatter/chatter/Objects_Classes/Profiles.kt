@@ -8,5 +8,6 @@ data class Profiles(
     val gender : String = "",
     val uid : String = "",
     val prq : String = "",
-    val prqA : String = ""
+    val prqA : String = "",
+    val imageURL : String  = ""
 )

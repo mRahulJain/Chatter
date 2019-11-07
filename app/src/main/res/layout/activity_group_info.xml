@@ -14,12 +14,28 @@
             android:layout_width="match_parent"
             android:background="#ececec"
             android:theme="@style/AppTheme.AppBarOverlay">
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbarGroupInfo"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:theme="@style/ThemeOverlay.AppCompat.Light"
-                android:layout_height="?attr/actionBarSize">
-            </androidx.appcompat.widget.Toolbar>
+                android:layout_height="wrap_content">
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbarGroupInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="1"
+                    android:theme="@style/ThemeOverlay.AppCompat.Light"
+                    android:layout_height="?attr/actionBarSize">
+                </androidx.appcompat.widget.Toolbar>
+                <Button
+                    android:layout_gravity="center"
+                    android:text="Save Changes"
+                    android:textAllCaps="false"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@android:color/black"
+                    android:id="@+id/save"
+                    android:background="@android:color/transparent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
         </com.google.android.material.appbar.AppBarLayout>
     </FrameLayout>
     <ProgressBar
@@ -40,30 +56,20 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="150dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
-                    android:id="@+id/roomPhoto"
-                    android:background="@drawable/background_circle"
-                    android:src="@drawable/ic_group"
-                    android:layout_height="150dp"/>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="150dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_gravity="center"
+                        android:id="@+id/roomPhoto"
+                        android:background="@drawable/background_circle"
+                        android:src="@drawable/ic_group"
+                        android:layout_height="150dp"/>
                 <Button
                     android:text="Change Profile Picture"
                     android:textAllCaps="false"
                     android:layout_gravity="center"
                     android:layout_marginTop="8dp"
                     android:id="@+id/changeProfilePicture"
-                    android:background="@android:color/transparent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <Button
-                    android:layout_gravity="center"
-                    android:text="Save Changes"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/black"
-                    android:id="@+id/save"
-                    android:visibility="gone"
                     android:background="@android:color/transparent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -116,8 +122,9 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_margin="10dp"
                     android:id="@+id/groupMembersG"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
         </ScrollView>
 

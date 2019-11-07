@@ -8,8 +8,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.webkit.MimeTypeMap
+import android.widget.GridLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
+import com.chatter.chatter.Adapters.InfoAdapter
+import com.chatter.chatter.Adapters.LoadingInfoAdapter
 import com.chatter.chatter.Objects_Classes.Profiles
 import com.chatter.chatter.Objects_Classes.Rooms
 import com.chatter.chatter.R
@@ -32,6 +36,7 @@ import java.lang.Exception
 class GroupInfoAct : AppCompatActivity() {
 
     var users : ArrayList<Profiles?> = arrayListOf()
+    val usersUID : ArrayList<String> = arrayListOf()
     val PICK_IMAGE_REQUEST = 2
     var imageUri : Uri? = null
     lateinit var storageReference : StorageReference
@@ -47,6 +52,10 @@ class GroupInfoAct : AppCompatActivity() {
         val roomName = intent.getStringExtra("roomName")
         progressGroupInfo.isVisible = true
 
+        groupMembersG.layoutManager = GridLayoutManager(this, 2, GridLayoutManager.VERTICAL,
+            false)
+        groupMembersG.adapter = LoadingInfoAdapter(this)
+
         setSupportActionBar(toolbarGroupInfo)
         supportActionBar?.title = roomName
 
@@ -56,10 +65,10 @@ class GroupInfoAct : AppCompatActivity() {
         storageReference = FirebaseStorage.getInstance()
             .getReference("roomImgUpload/${roomName}")
         databaseReference = FirebaseDatabase.getInstance()
-            .getReference("Rooms/${roomName}/roomImg")
+            .getReference("RoomInfo/${roomName}/roomImg")
 
         val ref = FirebaseDatabase.getInstance()
-            .getReference("Rooms/${roomName}")
+            .getReference("RoomInfo/${roomName}")
         ref.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
 
@@ -82,11 +91,58 @@ class GroupInfoAct : AppCompatActivity() {
 
         })
 
+        val reff = FirebaseDatabase.getInstance()
+            .getReference("InitialChats")
+        reff.addValueEventListener(object : ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if(p0.exists()) {
+                    for(snap in p0.children) {
+                        for(snapp in snap.children) {
+                            if(snapp.key.toString() == roomName) {
+                                usersUID.add(snap.key.toString())
+                                break
+                            }
+                        }
+                    }
+
+                    val reference = FirebaseDatabase.getInstance()
+                        .getReference("Profiles")
+                    reference.addValueEventListener(object : ValueEventListener{
+                        override fun onCancelled(p0: DatabaseError) {
+
+                        }
+
+                        override fun onDataChange(p0: DataSnapshot) {
+                            if(p0.exists()) {
+                                for(snap in p0.children) {
+                                    if(usersUID.contains(snap.key.toString())) {
+                                        users.add(snap.getValue(Profiles::class.java))
+                                    }
+                                }
+                                groupMembersG.layoutManager = GridLayoutManager(this@GroupInfoAct, 2, GridLayoutManager.VERTICAL,
+                                    false)
+                                groupMembersG.adapter = InfoAdapter(this@GroupInfoAct, users)
+                            }
+                        }
+
+                    })
+                }
+            }
+
+        })
+
         changeProfilePicture.setOnClickListener {
             openFileChooser()
         }
 
         save.setOnClickListener {
+            Toast.makeText(this,
+                "Please wait",
+                Toast.LENGTH_LONG).show()
             uploadFile()
         }
     }

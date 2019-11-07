@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.GroupInfoAct"></activity>
+        <activity android:name=".Activities.StarredMessageAct"></activity>
+        <activity android:name=".Activities.GroupInfoAct" />
         <activity android:name=".Activities.ConvoActivity" />
         <activity android:name=".Activities.SplashAct">
             <intent-filter>

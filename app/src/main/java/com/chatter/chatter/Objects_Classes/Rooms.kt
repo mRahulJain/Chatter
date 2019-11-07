@@ -4,6 +4,5 @@ data class Rooms(
     val roomName : String = "",
     val roomCode : String = "",
     val roomImg : String  = "",
-    val roomAdmin : String = "",
-    val roomMembers : ArrayList<String> = arrayListOf()
+    val roomAdmin : String = ""
 )
