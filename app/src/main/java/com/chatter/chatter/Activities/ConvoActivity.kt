@@ -508,15 +508,6 @@ class ConvoActivity : AppCompatActivity() {
                 return
             }
 
-            if(nameList[position]!!.date != date) {
-                holder.itemView.date.isVisible = true
-                holder.itemView.date.text = nameList[position]!!.date
-                date = nameList[position]!!.date
-            } else {
-                holder.itemView.date.isVisible = false
-                date = nameList[position]!!.date
-            }
-
             if(nameList[position]!!.type == "text") {
                 holder.itemView.tViewMessage.text = nameList[position]!!.text
                 holder.itemView.imageChat.isVisible = false

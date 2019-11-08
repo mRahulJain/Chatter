@@ -1,10 +1,13 @@
 package com.chatter.chatter.Adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.chatter.chatter.Activities.ProfileAct
 import com.chatter.chatter.Objects_Classes.Profiles
 import com.chatter.chatter.R
 import com.squareup.picasso.Picasso
@@ -37,9 +40,9 @@ class InfoAdapter(val context: Context, val nameList: ArrayList<Profiles?>) : Re
         holder.itemView.tViewUserNameP.text = nameList[position]!!.fullName
 
         holder.itemView.prof.setOnClickListener {
-//            val intent = Intent(context, ProfileAct::class.java)
-//            intent.putExtra("uid", "${nameList[position]!!.uid}")
-//            ContextCompat.startActivity(context, intent, null)
+            val intent = Intent(context, ProfileAct::class.java)
+            intent.putExtra("uid", "${nameList[position]!!.uid}")
+            ContextCompat.startActivity(context, intent, null)
         }
     }
 
