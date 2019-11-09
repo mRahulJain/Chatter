@@ -5,12 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_tab"
+    android:background="#000000"
     tools:context=".Activities.ImageActivity">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:background="#ececec"
+        android:background="@drawable/gradient_tab"
         android:theme="@style/AppTheme.AppBarOverlay">
         <FrameLayout
             android:layout_width="match_parent"

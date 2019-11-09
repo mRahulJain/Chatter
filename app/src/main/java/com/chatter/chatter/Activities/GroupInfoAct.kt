@@ -12,8 +12,10 @@ import android.widget.GridLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.room.Room
 import com.chatter.chatter.Adapters.InfoAdapter
 import com.chatter.chatter.Adapters.LoadingInfoAdapter
+import com.chatter.chatter.Database.AppDatabase
 import com.chatter.chatter.Objects_Classes.Profiles
 import com.chatter.chatter.Objects_Classes.Rooms
 import com.chatter.chatter.R
@@ -44,6 +46,16 @@ class GroupInfoAct : AppCompatActivity() {
     var finalImage :ByteArray = ByteArray(1000)
     var flagImage = false
     var image = ""
+    val friendList : ArrayList<String> = arrayListOf()
+    val db: AppDatabase by lazy {
+        Room.databaseBuilder(
+            this,
+            AppDatabase::class.java,
+            "User.db"
+        ).allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +96,13 @@ class GroupInfoAct : AppCompatActivity() {
                             .load(getInfo!!.roomImg)
                             .into(roomPhoto)
                     }
+
+                    roomPhoto.setOnClickListener {
+                        val intent = Intent(this@GroupInfoAct, ImageActivity::class.java)
+                        intent.putExtra("purpose", "Group Image")
+                        intent.putExtra("url", "${getInfo!!.roomImg}")
+                        startActivity(intent)
+                    }
                     groupAdminG.text = "Group made by "+getInfo!!.roomAdmin
                     progressGroupInfo.isVisible = false
                 }
@@ -118,14 +137,33 @@ class GroupInfoAct : AppCompatActivity() {
 
                         override fun onDataChange(p0: DataSnapshot) {
                             if(p0.exists()) {
+                                users.clear()
                                 for(snap in p0.children) {
                                     if(usersUID.contains(snap.key.toString())) {
                                         users.add(snap.getValue(Profiles::class.java))
                                     }
                                 }
-                                groupMembersG.layoutManager = GridLayoutManager(this@GroupInfoAct, 2, GridLayoutManager.VERTICAL,
-                                    false)
-                                groupMembersG.adapter = InfoAdapter(this@GroupInfoAct, users)
+                                val reff = FirebaseDatabase.getInstance()
+                                    .getReference("Friends/${db.UserDao().getUser()!!.uid}")
+                                reff.addValueEventListener(object : ValueEventListener{
+                                    override fun onCancelled(p0: DatabaseError) {
+
+                                    }
+
+                                    override fun onDataChange(p0: DataSnapshot) {
+                                        if(p0.exists()) {
+                                            friendList.clear()
+                                            for(snap in p0.children) {
+                                                friendList.add(snap.value.toString())
+                                            }
+                                        }
+                                        groupMembersG.layoutManager = GridLayoutManager(this@GroupInfoAct, 2, GridLayoutManager.VERTICAL,
+                                            false)
+                                        groupMembersG.adapter = InfoAdapter(this@GroupInfoAct, users, friendList)
+                                    }
+
+                                })
+
                             }
                         }
 

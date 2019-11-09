@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
+import com.chatter.chatter.Activities.AddPeopleAct
 import com.chatter.chatter.Activities.GroupAct
 import com.chatter.chatter.Adapters.ChatAdapter
 import com.chatter.chatter.Adapters.LoadingAdapter
@@ -136,6 +137,11 @@ class ChatsFrag : Fragment() {
             view!!.joinRoom.startAnimation(mFadeOut)
             view!!.addFriend.startAnimation(mFadeOut)
             view!!.plus.startAnimation(mRemoveButton)
+            startActivity(intent)
+        }
+
+        view!!.addFriend.setOnClickListener {
+            val intent = Intent(view!!.context, AddPeopleAct::class.java)
             startActivity(intent)
         }
 

@@ -11,31 +11,45 @@
     android:id="@+id/prof"
     android:elevation="@dimen/cardview_compat_inset_shadow"
     android:layout_height="wrap_content">
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerProfiles"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="vertical"
-            android:background="#ececec"
-            android:alpha="0.3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_gravity="center"
-                android:background="@drawable/background_circle"
-                android:id="@+id/imgPersonP"
-                android:layout_width="150dp"
-                android:layout_height="150dp"/>
-        </LinearLayout>
-        <TextView
-            android:textColor="@android:color/black"
-            android:id="@+id/tViewUserNameP"
-            android:layout_gravity="center"
-            android:gravity="center|left"
-
-            tools:text="Rahul"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </com.facebook.shimmer.ShimmerFrameLayout>
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmerProfiles"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="vertical"
+                android:alpha="0.3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_gravity="center"
+                    android:background="@drawable/background_circle"
+                    android:id="@+id/imgPersonP"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_gravity="bottom|center"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@android:color/black"
+                    android:id="@+id/tViewUserNameP"
+                    tools:text="Rahul"
+                    android:textStyle="bold|italic"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <Button
+                    android:textAllCaps="false"
+                    android:background="@android:color/transparent"
+                    android:text="Add Friend"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textColor="@android:color/black"
+                    android:id="@+id/addFriend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
 </androidx.cardview.widget.CardView>
