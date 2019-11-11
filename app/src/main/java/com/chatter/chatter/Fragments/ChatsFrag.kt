@@ -142,6 +142,13 @@ class ChatsFrag : Fragment() {
 
         view!!.addFriend.setOnClickListener {
             val intent = Intent(view!!.context, AddPeopleAct::class.java)
+            view!!.createRoom.isVisible = false
+            view!!.joinRoom.isVisible = false
+            view!!.addFriend.isVisible = false
+            view!!.createRoom.startAnimation(mFadeOut)
+            view!!.joinRoom.startAnimation(mFadeOut)
+            view!!.addFriend.startAnimation(mFadeOut)
+            view!!.plus.startAnimation(mRemoveButton)
             startActivity(intent)
         }
 
