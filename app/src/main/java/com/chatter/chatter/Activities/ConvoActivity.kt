@@ -66,7 +66,6 @@ class ConvoActivity : AppCompatActivity() {
     var finalImage :ByteArray = ByteArray(1000)
     var flagImage = false
     var date : String = ""
-    var mode : String = ""
     lateinit var storageReferenceDocs : StorageReference
     val db: AppDatabase by lazy {
         Room.databaseBuilder(
@@ -180,7 +179,6 @@ class ConvoActivity : AppCompatActivity() {
             builder.setItems(options, object : DialogInterface.OnClickListener{
                 override fun onClick(p0: DialogInterface?, i: Int) {
                     if(i == 0) {
-                        mode = "image"
                         flagImage = true
                         openImageChooser()
                     } else if(i == 1) {
@@ -191,7 +189,6 @@ class ConvoActivity : AppCompatActivity() {
                                 .setSelectedFiles(files)
                                 .setActivityTheme(R.style.LibAppTheme)
                                 .pickFile(this@ConvoActivity)
-                            mode = "docs"
                         }
                     }
                 }
@@ -252,165 +249,168 @@ class ConvoActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(mode == "image") {
-            if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            flagImage = true
+            imageUri = data.getData()
+            CropImage.activity(imageUri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1, 1)
+                .start(this)
+        } else {
+            flagImage = false
+        }
+
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            Log.d("myCHECK", "Inside if : ${CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE}")
+            flagImage = true
+            val result = CropImage.getActivityResult(data)
+            if (resultCode == RESULT_OK) {
                 flagImage = true
-                imageUri = data.getData()
-                CropImage.activity(imageUri)
-                    .setGuidelines(CropImageView.Guidelines.ON)
-                    .setAspectRatio(1, 1)
-                    .start(this)
-            } else {
+                val resultUri = result.getUri()
+                val file = File(resultUri.path.toString())
+
+                try {
+                    val compressedFileImage = Compressor(this)
+                        .setMaxHeight(300)
+                        .setMaxWidth(300)
+                        .setQuality(75)
+                        .compressToBitmap(file)
+
+                    val baos = ByteArrayOutputStream()
+                    compressedFileImage.compress(Bitmap.CompressFormat.JPEG, 80, baos)
+                    finalImage = baos.toByteArray()
+
+                    if(imageUri != null) {
+
+                        Toast.makeText(this@ConvoActivity, "Sending...", Toast.LENGTH_LONG).show()
+                        val fileRef = storageReference
+                            .child("${System.currentTimeMillis()}.${getFileExtension(imageUri!!)}")
+                        val uploadtTask = fileRef.putBytes(finalImage)
+                        uploadtTask.addOnFailureListener(object : OnFailureListener {
+                            override fun onFailure(p0: Exception) {
+                                Toast.makeText(this@ConvoActivity, "${p0.localizedMessage.toString()}", Toast.LENGTH_SHORT).show()
+                            }
+
+
+                        }).addOnSuccessListener(object :
+                            OnSuccessListener<UploadTask.TaskSnapshot> {
+                            override fun onSuccess(p0: UploadTask.TaskSnapshot?) {
+                                val uriTask = uploadtTask.continueWithTask(object :
+                                    Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
+                                    override fun then(p0: Task<UploadTask.TaskSnapshot>): Task<Uri> {
+                                        if(!p0.isSuccessful) {
+                                            throw p0.exception!!
+                                        }
+                                        return fileRef.getDownloadUrl()
+                                    }
+
+                                }).addOnCompleteListener(object : OnCompleteListener<Uri> {
+                                    override fun onComplete(p0: Task<Uri>) {
+                                        if(p0.isSuccessful){
+                                            val calendar = Calendar.getInstance()
+                                            calendar.timeInMillis = System.currentTimeMillis()
+                                            val date = calendar.get(Calendar.DAY_OF_MONTH)
+                                            val month = calendar.get(Calendar.MONTH)
+                                            val year = calendar.get(Calendar.YEAR)
+                                            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                                            val minute = calendar.get(Calendar.MINUTE)
+                                            val hashMap1 = HashMap<String, String>()
+                                            hashMap1.put("messageNumber", "${maxx+1}")
+                                            hashMap1.put("text", "${p0.result.toString()}")
+                                            hashMap1.put("name", "${db.UserDao().getUser()!!.username}")
+                                            hashMap1.put("uid", "${userID}")
+                                            hashMap1.put("type", "Image")
+                                            hashMap1.put("time", "${hour}:${minute}")
+                                            hashMap1.put("date", "${date}/${month}/${year}")
+                                            databaseReference.child("${maxx+1}").setValue(hashMap1)
+                                            Toast.makeText(this@ConvoActivity, "Sent", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+
+                                })
+                            }
+                        })
+                    } else {
+                        Toast.makeText(this@ConvoActivity, "No file selected", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e : IOException) {
+                    flagImage = false
+                    Toast.makeText(this@ConvoActivity, "${e.localizedMessage.toString()}", Toast.LENGTH_SHORT).show()
+                }
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 flagImage = false
             }
-
-            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-                flagImage = true
-                val result = CropImage.getActivityResult(data)
-                if (resultCode == RESULT_OK) {
-                    flagImage = true
-                    val resultUri = result.getUri()
-                    val file = File(resultUri.path.toString())
-
-                    try {
-                        val compressedFileImage = Compressor(this)
-                            .setMaxHeight(300)
-                            .setMaxWidth(300)
-                            .setQuality(75)
-                            .compressToBitmap(file)
-
-                        val baos = ByteArrayOutputStream()
-                        compressedFileImage.compress(Bitmap.CompressFormat.JPEG, 80, baos)
-                        finalImage = baos.toByteArray()
-
-                        if(imageUri != null) {
-
-                            Toast.makeText(this@ConvoActivity, "Sending...", Toast.LENGTH_LONG).show()
-                            val fileRef = storageReference
-                                .child("${System.currentTimeMillis()}.${getFileExtension(imageUri!!)}")
-                            val uploadtTask = fileRef.putBytes(finalImage)
-                            uploadtTask.addOnFailureListener(object : OnFailureListener {
-                                override fun onFailure(p0: Exception) {
-                                    Toast.makeText(this@ConvoActivity, "${p0.localizedMessage.toString()}", Toast.LENGTH_SHORT).show()
-                                }
-
-
-                            }).addOnSuccessListener(object :
-                                OnSuccessListener<UploadTask.TaskSnapshot> {
-                                override fun onSuccess(p0: UploadTask.TaskSnapshot?) {
-                                    val uriTask = uploadtTask.continueWithTask(object :
-                                        Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
-                                        override fun then(p0: Task<UploadTask.TaskSnapshot>): Task<Uri> {
-                                            if(!p0.isSuccessful) {
-                                                throw p0.exception!!
-                                            }
-                                            return fileRef.getDownloadUrl()
-                                        }
-
-                                    }).addOnCompleteListener(object : OnCompleteListener<Uri> {
-                                        override fun onComplete(p0: Task<Uri>) {
-                                            if(p0.isSuccessful){
-                                                val calendar = Calendar.getInstance()
-                                                calendar.timeInMillis = System.currentTimeMillis()
-                                                val date = calendar.get(Calendar.DAY_OF_MONTH)
-                                                val month = calendar.get(Calendar.MONTH)
-                                                val year = calendar.get(Calendar.YEAR)
-                                                val hour = calendar.get(Calendar.HOUR_OF_DAY)
-                                                val minute = calendar.get(Calendar.MINUTE)
-                                                val hashMap1 = HashMap<String, String>()
-                                                hashMap1.put("messageNumber", "${maxx+1}")
-                                                hashMap1.put("text", "${p0.result.toString()}")
-                                                hashMap1.put("name", "${db.UserDao().getUser()!!.username}")
-                                                hashMap1.put("uid", "${userID}")
-                                                hashMap1.put("type", "Image")
-                                                hashMap1.put("time", "${hour}:${minute}")
-                                                hashMap1.put("date", "${date}/${month}/${year}")
-                                                databaseReference.child("${maxx+1}").setValue(hashMap1)
-                                                Toast.makeText(this@ConvoActivity, "Sent", Toast.LENGTH_LONG).show()
-                                            }
-                                        }
-
-                                    })
-                                }
-                            })
-                        } else {
-                            Toast.makeText(this@ConvoActivity, "No file selected", Toast.LENGTH_SHORT).show()
-                        }
-                    } catch (e : IOException) {
-                        flagImage = false
-                        Toast.makeText(this@ConvoActivity, "${e.localizedMessage.toString()}", Toast.LENGTH_SHORT).show()
-                    }
-                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                    flagImage = false
-                }
-            }
-        } else if(mode == "docs") {
-            when (requestCode) {
-                FilePickerConst.REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
-                    files.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS))
-                }
-            }
-            if(files.size != 0) {
-                fileUri = Uri.parse(files[0])
-                val refNameS = fileUri.toString()
-                val nameListS = refNameS.split(".")
-                val actualNameS = nameListS[nameListS.size - 1]
-                val fileRefS = storageReference
-                    .child("${System.currentTimeMillis()}.${actualNameS}")
-                val fileS = Uri.fromFile(File("${fileUri}"))
-                val uploadSTask = fileRefS.putFile(fileS)
-                uploadSTask.addOnFailureListener(object : OnFailureListener {
-                    override fun onFailure(p0: Exception) {
-                        Toast.makeText(this@ConvoActivity,
-                            "${p0.localizedMessage}", Toast.LENGTH_SHORT).show()
-                    }
-
-
-                }).addOnSuccessListener(object : OnSuccessListener<UploadTask.TaskSnapshot> {
-                    override fun onSuccess(p0: UploadTask.TaskSnapshot?) {
-                        val uriTask = uploadSTask.continueWithTask(object :
-                            Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
-                            override fun then(p0: Task<UploadTask.TaskSnapshot>): Task<Uri> {
-                                if(!p0.isSuccessful) {
-                                    throw p0.exception!!
-                                }
-                                return fileRefS.getDownloadUrl()
-                            }
-
-                        }).addOnCompleteListener(object : OnCompleteListener<Uri> {
-                            override fun onComplete(p0: Task<Uri>) {
-                                if(p0.isSuccessful){
-                                    docURLs = p0.result.toString()
-                                    val calendar = Calendar.getInstance()
-                                    calendar.timeInMillis = System.currentTimeMillis()
-                                    val date = calendar.get(Calendar.DAY_OF_MONTH)
-                                    val month = calendar.get(Calendar.MONTH)
-                                    val year = calendar.get(Calendar.YEAR)
-                                    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-                                    val minute = calendar.get(Calendar.MINUTE)
-                                    val hashMap1 = HashMap<String, String>()
-                                    hashMap1.put("messageNumber", "${maxx+1}")
-                                    hashMap1.put("text", "${docURLs}")
-                                    hashMap1.put("name", "${db.UserDao().getUser()!!.username}")
-                                    hashMap1.put("uid", "${userID}")
-                                    hashMap1.put("type", "Document")
-                                    hashMap1.put("time", "${hour}:${minute}")
-                                    hashMap1.put("date", "${date}/${month}/${year}")
-                                    databaseReference.child("${maxx+1}").setValue(hashMap1)
-                                    Toast.makeText(this@ConvoActivity, "Sent", Toast.LENGTH_LONG).show()
-                                    Toast.makeText(this@ConvoActivity, "Uploaded",
-                                        Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                        })
-                    }
-                })
-            }
+        } else {
+            Log.d("myCHECK", "${CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE}")
         }
 
 
-        mode = ""
+        when (requestCode) {
+            FilePickerConst.REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
+                files.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS))
+            }
+        }
+        if(files.size != 0) {
+            Toast.makeText(this@ConvoActivity,
+                "Please wait",
+                Toast.LENGTH_SHORT).show()
+            fileUri = Uri.parse(files[0])
+            val refNameS = fileUri.toString()
+            val nameListS = refNameS.split(".")
+            val actualNameS = nameListS[nameListS.size - 1]
+            val fileRefS = storageReference
+                .child("${System.currentTimeMillis()}.${actualNameS}")
+            val fileS = Uri.fromFile(File("${fileUri}"))
+            val uploadSTask = fileRefS.putFile(fileS)
+            uploadSTask.addOnFailureListener(object : OnFailureListener {
+                override fun onFailure(p0: Exception) {
+                    Toast.makeText(this@ConvoActivity,
+                        "${p0.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+
+
+            }).addOnSuccessListener(object : OnSuccessListener<UploadTask.TaskSnapshot> {
+                override fun onSuccess(p0: UploadTask.TaskSnapshot?) {
+                    val uriTask = uploadSTask.continueWithTask(object :
+                        Continuation<UploadTask.TaskSnapshot, Task<Uri>> {
+                        override fun then(p0: Task<UploadTask.TaskSnapshot>): Task<Uri> {
+                            if(!p0.isSuccessful) {
+                                throw p0.exception!!
+                            }
+                            return fileRefS.getDownloadUrl()
+                        }
+
+                    }).addOnCompleteListener(object : OnCompleteListener<Uri> {
+                        override fun onComplete(p0: Task<Uri>) {
+                            if(p0.isSuccessful){
+                                docURLs = p0.result.toString()
+                                val calendar = Calendar.getInstance()
+                                calendar.timeInMillis = System.currentTimeMillis()
+                                val date = calendar.get(Calendar.DAY_OF_MONTH)
+                                val month = calendar.get(Calendar.MONTH)
+                                val year = calendar.get(Calendar.YEAR)
+                                val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                                val minute = calendar.get(Calendar.MINUTE)
+                                val hashMap1 = HashMap<String, String>()
+                                hashMap1.put("messageNumber", "${maxx+1}")
+                                hashMap1.put("text", "${docURLs}")
+                                hashMap1.put("name", "${db.UserDao().getUser()!!.username}")
+                                hashMap1.put("uid", "${userID}")
+                                hashMap1.put("type", "Document")
+                                hashMap1.put("time", "${hour}:${minute}")
+                                hashMap1.put("date", "${date}/${month}/${year}")
+                                databaseReference.child("${maxx+1}").setValue(hashMap1)
+                                Toast.makeText(this@ConvoActivity, "Sent", Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@ConvoActivity, "Uploaded",
+                                    Toast.LENGTH_SHORT).show()
+                                files.clear()
+                            }
+                        }
+
+                    })
+                }
+            })
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
