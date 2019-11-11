@@ -151,9 +151,6 @@ class ChatsFrag : Fragment() {
             view!!.plus.startAnimation(mRemoveButton)
             startActivity(intent)
         }
-
         return view
     }
-
-
 }
