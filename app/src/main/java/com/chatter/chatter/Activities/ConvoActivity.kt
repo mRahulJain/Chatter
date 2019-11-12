@@ -5,12 +5,16 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.PaintFlagsDrawFilter
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.*
 import android.webkit.MimeTypeMap
@@ -18,6 +22,9 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.text.bold
+import androidx.core.text.color
+import androidx.core.text.underline
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,11 +44,13 @@ import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
 import id.zelory.compressor.Compressor
 import kotlinx.android.synthetic.main.activity_convo.*
+import kotlinx.android.synthetic.main.activity_phone_auth.*
 import kotlinx.android.synthetic.main.message_item_1.view.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.lang.Exception
+import java.security.AccessController.getContext
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -50,6 +59,7 @@ class ConvoActivity : AppCompatActivity() {
 
     val roomMessages : ArrayList<Message?> = arrayListOf<Message?>()
     val PICK_IMAGE_REQUEST = 3
+    val SELECT_PHONE_NUMBER = 4
     var docURLs : String = ""
     lateinit var fileUri : Uri
     var itr = 0
@@ -172,7 +182,7 @@ class ConvoActivity : AppCompatActivity() {
 
         addFile.setOnClickListener {
             val options = arrayOf (
-                "Gallery", "Documents"
+                "Gallery", "Documents", "Contact"
             )
             val builder = AlertDialog.Builder(this@ConvoActivity)
             builder.setTitle("Select the file")
@@ -190,6 +200,8 @@ class ConvoActivity : AppCompatActivity() {
                                 .setActivityTheme(R.style.LibAppTheme)
                                 .pickFile(this@ConvoActivity)
                         }
+                    } else if(i == 2) {
+                        openContactChooser()
                     }
                 }
 
@@ -230,6 +242,13 @@ class ConvoActivity : AppCompatActivity() {
         }
     }
 
+    private fun openContactChooser() {
+        val uri = Uri.parse("content://contacts")
+        val intent = Intent(Intent.ACTION_PICK, uri)
+        intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE)
+        startActivityForResult(intent, SELECT_PHONE_NUMBER)
+    }
+
     private fun getFileExtension(uri : Uri) : String? {
         val cr = getContentResolver()
         val mime = MimeTypeMap.getSingleton()
@@ -249,6 +268,50 @@ class ConvoActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == SELECT_PHONE_NUMBER && resultCode == RESULT_OK && data!!.data != null) {
+            // Get the URI and query the content provider for the phone number
+            val contactUri = data!!.data!!
+            val projection = arrayOf(
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+            )
+            val cursor = this.contentResolver.query(contactUri, projection,
+                null, null, null)
+
+            // If the cursor returned is valid, get the phone number
+            if (cursor != null && cursor.moveToFirst()) {
+                val numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val number = cursor.getString(numberIndex)
+
+                val nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                val name = cursor.getString(nameIndex)
+                Log.d("myCHECK", "${name} : ${number}")
+                var s = SpannableStringBuilder()
+                    .append("${name}:")
+                    .append("${number}")
+                val calendar = Calendar.getInstance()
+                calendar.timeInMillis = System.currentTimeMillis()
+                val date = calendar.get(Calendar.DAY_OF_MONTH)
+                val month = calendar.get(Calendar.MONTH)
+                val year = calendar.get(Calendar.YEAR)
+                val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                val minute = calendar.get(Calendar.MINUTE)
+                val hashMap1 = HashMap<String, String>()
+                hashMap1.put("messageNumber", "${maxx+1}")
+                hashMap1.put("text", "${s}")
+                hashMap1.put("name", "${db.UserDao().getUser()!!.username}")
+                hashMap1.put("uid", "${userID}")
+                hashMap1.put("type", "contact")
+                hashMap1.put("time", "${hour}:${minute}")
+                hashMap1.put("date", "${date}/${month}/${year}")
+                databaseReference.child("${maxx+1}").setValue(hashMap1)
+            }
+
+            cursor!!.close()
+        } else {
+            Log.d("myCHECK", "data is null")
+        }
+
         if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             flagImage = true
             imageUri = data.getData()
@@ -613,6 +676,22 @@ class ConvoActivity : AppCompatActivity() {
                     .load(nameList[position]!!.text)
                     .fit()
                     .into(holder.itemView.imageChat)
+            } else if(nameList[position]!!.type == "contact") {
+                val text = nameList[position]!!.text.split(":")
+                val s = SpannableStringBuilder()
+                    .append("${text[0]}: ")
+                    .underline {
+                        append("${text[1]}")
+                    }
+                holder.itemView.tViewMessage.text = s
+                holder.itemView.imageChat.isVisible = false
+                holder.itemView.tViewMessage.isVisible = true
+                holder.itemView.tViewMessage.setOnClickListener {
+                    val intent = Intent()
+                    intent.action = Intent.ACTION_VIEW
+                    intent.data = Uri.parse("tel:${text[1]}")
+                    startActivity(intent)
+                }
             } else {
                 holder.itemView.tViewMessage.text = nameList[position]!!.text
                 holder.itemView.imageChat.isVisible = false
