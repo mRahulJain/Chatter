@@ -5,11 +5,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.PaintFlagsDrawFilter
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -22,8 +20,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
-import androidx.core.text.bold
-import androidx.core.text.color
 import androidx.core.text.underline
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,17 +36,13 @@ import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-import droidninja.filepicker.FilePickerBuilder
-import droidninja.filepicker.FilePickerConst
 import id.zelory.compressor.Compressor
 import kotlinx.android.synthetic.main.activity_convo.*
-import kotlinx.android.synthetic.main.activity_phone_auth.*
 import kotlinx.android.synthetic.main.message_item_1.view.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.lang.Exception
-import java.security.AccessController.getContext
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -60,6 +52,7 @@ class ConvoActivity : AppCompatActivity() {
     val roomMessages : ArrayList<Message?> = arrayListOf<Message?>()
     val PICK_IMAGE_REQUEST = 3
     val SELECT_PHONE_NUMBER = 4
+    val PICK_DOC_REQUEST = 5
     var docURLs : String = ""
     lateinit var fileUri : Uri
     var itr = 0
@@ -87,7 +80,7 @@ class ConvoActivity : AppCompatActivity() {
             .build()
     }
     lateinit var userID : String
-    val files : ArrayList<String> = arrayListOf()
+    lateinit var files : Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -195,10 +188,10 @@ class ConvoActivity : AppCompatActivity() {
                         if(ActivityCompat.checkSelfPermission(this@ConvoActivity,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             == PackageManager.PERMISSION_GRANTED) {
-                            FilePickerBuilder.instance.setMaxCount(1)
-                                .setSelectedFiles(files)
-                                .setActivityTheme(R.style.LibAppTheme)
-                                .pickFile(this@ConvoActivity)
+                            val intent = Intent()
+                            intent.setType("file/*")
+                            intent.setAction(Intent.ACTION_GET_CONTENT)
+                            startActivityForResult(intent, PICK_DOC_REQUEST)
                         }
                     } else if(i == 2) {
                         openContactChooser()
@@ -409,22 +402,24 @@ class ConvoActivity : AppCompatActivity() {
 
 
         when (requestCode) {
-            FilePickerConst.REQUEST_CODE_DOC -> if (resultCode == Activity.RESULT_OK && data != null) {
-                files.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS))
+            PICK_DOC_REQUEST -> if (resultCode == Activity.RESULT_OK && data != null) {
+                files = data.data!!
+            } else {
+                Toast.makeText(this@ConvoActivity, "No file selected", Toast.LENGTH_SHORT).show()
             }
         }
-        if(files.size != 0) {
+        if(files != null) {
             Toast.makeText(this@ConvoActivity,
                 "Please wait",
                 Toast.LENGTH_SHORT).show()
-            fileUri = Uri.parse(files[0])
+            fileUri = files
             val refNameS = fileUri.toString()
             val nameListS = refNameS.split(".")
             val actualNameS = nameListS[nameListS.size - 1]
             val fileRefS = storageReference
                 .child("${System.currentTimeMillis()}.${actualNameS}")
-            val fileS = Uri.fromFile(File("${fileUri}"))
-            val uploadSTask = fileRefS.putFile(fileS)
+//            val fileS = Uri.fromFile(File("${fileUri}"))
+            val uploadSTask = fileRefS.putFile(fileUri)
             uploadSTask.addOnFailureListener(object : OnFailureListener {
                 override fun onFailure(p0: Exception) {
                     Toast.makeText(this@ConvoActivity,
@@ -466,7 +461,6 @@ class ConvoActivity : AppCompatActivity() {
                                 Toast.makeText(this@ConvoActivity, "Sent", Toast.LENGTH_LONG).show()
                                 Toast.makeText(this@ConvoActivity, "Uploaded",
                                     Toast.LENGTH_SHORT).show()
-                                files.clear()
                             }
                         }
 
